@@ -1,0 +1,658 @@
+.cari-modul-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 0;
+}
+
+.modul-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.btn-yeni-cari {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 
+        0 8px 20px rgba(102, 126, 234, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+        0 -2px 10px rgba(0, 0, 0, 0.2) inset;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.btn-yeni-cari::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-yeni-cari:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-yeni-cari:hover {
+    transform: translateY(-3px) scale(1.02) translateZ(0);
+    box-shadow: 
+        0 15px 35px rgba(102, 126, 234, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+        0 -2px 10px rgba(0, 0, 0, 0.2) inset;
+}
+
+.btn-yeni-cari:active {
+    transform: translateY(-1px) scale(0.98) translateZ(0);
+}
+
+/* Tablo Container */
+.cari-table-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 -5px 20px rgba(0, 0, 0, 0.05) inset;
+    overflow: hidden;
+    margin-bottom: 60px;
+    position: relative;
+    transform: translateZ(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cari-table-container:hover {
+    box-shadow: 
+        0 20px 50px rgba(102, 126, 234, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 -5px 20px rgba(0, 0, 0, 0.05) inset;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
+}
+
+/* Tablo Stilleri */
+.cari-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 1800px;
+}
+
+.cari-table thead {
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.95) 0%, rgba(233, 236, 239, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.cari-table th {
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.cari-table tbody tr {
+    border-bottom: 1px solid rgba(233, 236, 239, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    transform: translateZ(0);
+}
+
+.cari-table tbody tr::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.cari-table tbody tr:nth-child(even) {
+    background: rgba(248, 249, 250, 0.5);
+}
+
+.cari-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(231, 243, 255, 0.8) 0%, rgba(207, 226, 255, 0.6) 100%);
+    cursor: pointer;
+    transform: translateX(5px) translateZ(5px);
+    box-shadow: 
+        -5px 0 15px rgba(102, 126, 234, 0.2),
+        0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.cari-table tbody tr:hover::before {
+    opacity: 1;
+}
+
+.cari-table tbody tr.selected {
+    background: linear-gradient(90deg, rgba(207, 226, 255, 0.9) 0%, rgba(173, 216, 255, 0.7) 100%);
+    box-shadow: 
+        -5px 0 20px rgba(102, 126, 234, 0.3),
+        0 2px 10px rgba(0, 0, 0, 0.05);
+    transform: translateX(8px) translateZ(10px);
+}
+
+.cari-table tbody tr.selected::before {
+    opacity: 1;
+    width: 6px;
+}
+
+.cari-table td {
+    padding: 10px 8px;
+    color: #212529;
+    vertical-align: middle;
+}
+
+/* Kolon Genişlikleri */
+.checkbox-col {
+    width: 40px;
+    text-align: center;
+}
+
+.hiyerarsi-col {
+    width: 120px;
+    font-weight: 600;
+    color: #667eea;
+    text-align: center;
+}
+
+.kodu-col {
+    width: 120px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.aciklama-col {
+    width: 300px;
+    font-weight: 500;
+}
+
+.bakiye-col {
+    width: 150px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.bakiye-col.positive {
+    color: #28a745;
+}
+
+.bakiye-col.negative {
+    color: #dc3545;
+}
+
+.anonim-col {
+    width: 120px;
+}
+
+.sehir-col {
+    width: 120px;
+}
+
+.ulke-col {
+    width: 100px;
+}
+
+.is-col {
+    width: 80px;
+}
+
+.ozel-kod-col {
+    width: 120px;
+}
+
+.efatura-col {
+    width: 120px;
+}
+
+.not-col {
+    width: 250px;
+    font-style: italic;
+    color: #6c757d;
+    cursor: pointer;
+    position: relative;
+}
+
+.not-col:hover {
+    background: #f0f0f0;
+    color: #667eea;
+}
+
+.not-col i {
+    font-size: 12px;
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #667eea;
+    font-size: 16px;
+}
+
+.loading i {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.no-results i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #ddd;
+}
+
+.no-results p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.btn-yeni-cari-small {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-yeni-cari-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer Bar */
+.cari-footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #dee2e6;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.footer-tabs {
+    display: flex;
+    gap: 5px;
+}
+
+.footer-tab {
+    padding: 8px 15px;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: #495057;
+    transition: all 0.3s;
+    border-bottom: none;
+}
+
+.footer-tab:hover {
+    background: #f8f9fa;
+}
+
+.footer-tab.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.footer-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 6px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 13px;
+    background: white;
+    cursor: pointer;
+}
+
+.btn-kullanilanlar {
+    padding: 6px 15px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #495057;
+    transition: all 0.3s;
+}
+
+.btn-kullanilanlar:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+}
+
+.btn-kapat-footer {
+    padding: 8px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-kapat-footer:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Modal Stilleri */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10000 !important;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 -10px 30px rgba(0, 0, 0, 0.1) inset;
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    transform: translateZ(0);
+    overflow: hidden;
+    z-index: 10001 !important;
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px) scale(0.9) rotateX(10deg);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1) rotateX(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.modal-header {
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    box-shadow: 
+        0 5px 20px rgba(102, 126, 234, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+        0 -2px 10px rgba(0, 0, 0, 0.2) inset;
+}
+
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.modal-close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    transition: opacity 0.3s;
+}
+
+.modal-close:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    padding: 25px;
+    max-height: 60vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+}
+
+.modal-cari-info {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #495057;
+}
+
+.modal-cari-info strong {
+    color: #667eea;
+    font-size: 16px;
+}
+
+.form-group-modal {
+    margin-bottom: 20px;
+}
+
+.form-group-modal label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group-modal input,
+.form-group-modal select,
+.form-group-modal textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #212529 !important;
+    background: #ffffff !important;
+    resize: vertical;
+    transition: border-color 0.3s;
+    pointer-events: auto !important;
+    z-index: 100 !important;
+    position: relative !important;
+    cursor: text !important;
+}
+
+.form-group-modal textarea {
+    min-height: 100px;
+}
+
+.form-group-modal textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group-modal textarea::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    background: #f8f9fa;
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-modal-cancel,
+.btn-modal-save {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-modal-cancel {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-modal-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-modal-save {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.btn-modal-save::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-modal-save:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-modal-save:hover {
+    transform: translateY(-3px) scale(1.02) translateZ(0);
+    box-shadow: 
+        0 10px 25px rgba(102, 126, 234, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+        0 -2px 10px rgba(0, 0, 0, 0.2) inset;
+}
+
+.btn-modal-save:active {
+    transform: translateY(-1px) scale(0.98) translateZ(0);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .cari-table {
+        font-size: 12px;
+    }
+    
+    .cari-table th,
+    .cari-table td {
+        padding: 8px 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+}

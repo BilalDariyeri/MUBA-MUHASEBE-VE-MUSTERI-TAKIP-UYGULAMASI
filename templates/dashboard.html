@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karşılama Ekranı</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/input-fix.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Üst Menü Çubuğu -->
+        {% include 'includes/header.html' %}
+
+        <!-- Ana İçerik Alanı -->
+        <main class="main-content">
+            <!-- Arama Çubuğu ve Cari Hesap Ekle Butonu -->
+            <div class="search-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Arama Yapın" class="search-input">
+                </div>
+                <a href="{{ url_for('main.cari_hesap_ekle') }}" class="btn-cari-ekle">
+                    <i class="fas fa-plus-circle"></i>
+                    Cari Hesap Ekle
+                </a>
+            </div>
+
+            <!-- Admin Sekmesi (Sadece admin görür) -->
+            <div id="admin-section" style="display: none; margin-bottom: 30px;">
+                <section class="shortcuts-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Admin Paneli
+                    </h2>
+                    <div class="shortcuts-grid">
+                        <div class="shortcut-card" onclick="navigateTo('admin-logs')" style="border: 2px solid #dc3545;">
+                            <div class="shortcut-icon" style="color: #dc3545;">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="shortcut-label">Sistem Logları</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Kullanıcı Yönetimi (Sadece admin görür) -->
+            <div id="user-management-section" style="display: none; margin-bottom: 30px;">
+                <section class="shortcuts-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-users-cog"></i>
+                        Kullanıcı Yönetimi
+                    </h2>
+                    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <button onclick="showAddUserDialog()" class="btn-login" style="width: auto; padding: 10px 20px; margin-bottom: 20px;">
+                            <i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle
+                        </button>
+                        <div id="users-list">
+                            <!-- Kullanıcılar buraya yüklenecek -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Kısayollar Bölümü -->
+            <section class="shortcuts-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Kısayollarım
+                </h2>
+                <div class="shortcuts-grid">
+                    <div class="shortcut-card" onclick="navigateTo('satis-faturalari')">
+                        <div class="shortcut-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="shortcut-label">Satış Faturaları</div>
+                    </div>
+                    <div class="shortcut-card active" onclick="navigateTo('cari-hesap')">
+                        <div class="shortcut-icon">
+                            <i class="fas fa-address-book"></i>
+                        </div>
+                        <div class="shortcut-label">Cari Hesap</div>
+                    </div>
+                    <div class="shortcut-card" onclick="navigateTo('malzemeler')">
+                        <div class="shortcut-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="shortcut-label">Malzemeler</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- İstatistikler veya Ek Bilgiler -->
+            <section class="info-section">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Hızlı Erişim</h3>
+                        <p>Sık kullandığınız modüllere kolayca erişin</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sağ Sidebar -->
+        <aside class="sidebar-right">
+            <div class="user-info">
+                <div class="user-name">Kullanıcı</div>
+                <div class="user-company">Şirket Adı</div>
+                <div class="user-period">01.01.2025 - 31.12.2025</div>
+            </div>
+            <div class="widget-section">
+                <div class="widget-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Çalışma Tarihi</span>
+                    <div class="widget-value">21</div>
+                </div>
+                <div class="widget-item" onclick="openCalculator()" style="cursor: pointer;">
+                    <i class="fas fa-calculator"></i>
+                    <span>Hesap Makinesi</span>
+                </div>
+                <div class="widget-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Nakitler</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Hesap Makinesi Modal -->
+    <div id="calculator-modal" class="modal">
+        <div class="calculator-container">
+            <div class="calculator-header">
+                <h3>Hesap Makinesi</h3>
+                <button class="calculator-close" onclick="closeCalculator()">&times;</button>
+            </div>
+            <input type="text" id="calculator-display" readonly value="0">
+            <div class="calculator-buttons">
+                <button class="calc-btn calc-btn-clear" onclick="clearAll()">C</button>
+                <button class="calc-btn calc-btn-function" onclick="clearEntry()">CE</button>
+                <button class="calc-btn calc-btn-function" onclick="backspace()">←</button>
+                <button class="calc-btn calc-btn-operator" onclick="performOperation('/')">/</button>
+                
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('7')">7</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('8')">8</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('9')">9</button>
+                <button class="calc-btn calc-btn-operator" onclick="performOperation('*')">×</button>
+                
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('4')">4</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('5')">5</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('6')">6</button>
+                <button class="calc-btn calc-btn-operator" onclick="performOperation('-')">-</button>
+                
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('1')">1</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('2')">2</button>
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('3')">3</button>
+                <button class="calc-btn calc-btn-operator" onclick="performOperation('+')">+</button>
+                
+                <button class="calc-btn calc-btn-number" onclick="inputNumber('0')" style="grid-column: span 2;">0</button>
+                <button class="calc-btn calc-btn-number" onclick="inputDecimal()">.</button>
+                <button class="calc-btn calc-btn-equals" onclick="calculateResult()">=</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Calculator Button -->
+    <button class="floating-calculator-btn" onclick="openCalculator()" title="Hesap Makinesi">
+        <i class="fas fa-calculator"></i>
+    </button>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hesap_makinesi.css') }}">
+    {% include 'includes/notification.html' %}
+    <script src="{{ url_for('static', filename='js/hesap_makinesi.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
+

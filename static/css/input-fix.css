@@ -1,0 +1,65 @@
+/* Global Input Fix - Tüm input'ların çalışması için */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+    pointer-events: auto !important;
+    z-index: 1000 !important;
+    position: relative !important;
+    cursor: text !important;
+    background: #ffffff !important;
+    color: #212529 !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    pointer-events: auto !important;
+    z-index: 1001 !important;
+    outline: none !important;
+}
+
+/* Modal içindeki input'lar için ekstra güvence */
+.modal input,
+.modal textarea,
+.modal select {
+    pointer-events: auto !important;
+    z-index: 10000 !important;
+    position: relative !important;
+    background: #ffffff !important;
+    color: #212529 !important;
+}
+
+/* Modal content pseudo-element'lerinin input'ları engellememesi için */
+.modal-content::before,
+.modal-content::after,
+.modal-header::before,
+.modal-header::after {
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+/* Modal body'nin input'ları engellememesi için */
+.modal-body {
+    pointer-events: auto !important;
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+/* Form group'ların input'ları engellememesi için */
+.form-group-modal,
+.form-group {
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+

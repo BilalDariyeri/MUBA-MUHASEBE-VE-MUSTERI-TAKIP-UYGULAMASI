@@ -1,0 +1,44 @@
+<!-- Hesap Makinesi Modal -->
+<div id="calculator-modal" class="modal">
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h3>Hesap Makinesi</h3>
+            <button class="calculator-close" onclick="closeCalculator()">&times;</button>
+        </div>
+        <input type="text" id="calculator-display" readonly value="0">
+        <div class="calculator-buttons">
+            <button class="calc-btn calc-btn-clear" onclick="clearAll()">C</button>
+            <button class="calc-btn calc-btn-function" onclick="clearEntry()">CE</button>
+            <button class="calc-btn calc-btn-function" onclick="backspace()">←</button>
+            <button class="calc-btn calc-btn-operator" onclick="performOperation('/')">/</button>
+            
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('7')">7</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('8')">8</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('9')">9</button>
+            <button class="calc-btn calc-btn-operator" onclick="performOperation('*')">×</button>
+            
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('4')">4</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('5')">5</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('6')">6</button>
+            <button class="calc-btn calc-btn-operator" onclick="performOperation('-')">-</button>
+            
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('1')">1</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('2')">2</button>
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('3')">3</button>
+            <button class="calc-btn calc-btn-operator" onclick="performOperation('+')">+</button>
+            
+            <button class="calc-btn calc-btn-number" onclick="inputNumber('0')" style="grid-column: span 2;">0</button>
+            <button class="calc-btn calc-btn-number" onclick="inputDecimal()">.</button>
+            <button class="calc-btn calc-btn-equals" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Calculator Button -->
+<button class="floating-calculator-btn" id="floating-calculator-btn" onclick="openCalculator()" title="Hesap Makinesi" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
+    <i class="fas fa-calculator"></i>
+</button>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hesap_makinesi.css') }}">
+<script src="{{ url_for('static', filename='js/hesap_makinesi.js') }}"></script>
+

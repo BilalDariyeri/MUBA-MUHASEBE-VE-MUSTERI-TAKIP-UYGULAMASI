@@ -1,0 +1,17 @@
+flask
+python-dotenv
+flask-cors
+PyQt5
+PyQtWebEngine
+requests
+flask-session
+reportlab
+openpyxl
+pandas
+werkzeug
+tkcalendar
+matplotlib
+numpy
+scikit-learn
+joblib
+

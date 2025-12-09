@@ -1,0 +1,47 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Python files - LF normalization (Git will convert CRLF to LF on commit)
+*.py text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# HTML/CSS/JS files
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+
+# Config files
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Database files (binary)
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Image files (binary)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.otf binary
+*.ttf binary
+
+# PDF files (binary)
+*.pdf binary
+
+# Model files (binary)
+*.pkl binary
+
+# Archives (binary)
+*.zip binary
+*.tar binary
+*.gz binary
+

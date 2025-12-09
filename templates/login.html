@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - GO WINGS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 10px;
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .login-tab:hover {
+            color: #667eea;
+        }
+        
+        .login-form-container {
+            display: block;
+        }
+        
+        .login-form-container.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1><i class="fas fa-feather-alt"></i> GO WINGS</h1>
+            <p>Mali İşler Yönetim Sistemi</p>
+        </div>
+        
+        <!-- Tab Sistemi -->
+        <div class="login-tabs">
+            <button class="login-tab active" onclick="switchTab('user')">
+                <i class="fas fa-user"></i> Kullanıcı Girişi
+            </button>
+            <button class="login-tab" onclick="switchTab('admin')">
+                <i class="fas fa-shield-alt"></i> Admin Girişi
+            </button>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <!-- Kullanıcı Giriş Formu -->
+        <form id="login-form" class="login-form-container">
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> E-posta</label>
+                <input type="email" id="email" name="email" required placeholder="ornek@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Şifre</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </button>
+            
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner fa-spin"></i> Giriş yapılıyor...
+            </div>
+        </form>
+        
+        <!-- Admin Giriş Formu -->
+        <form id="admin-login-form" class="login-form-container hidden">
+            <div class="form-group">
+                <label for="admin-email"><i class="fas fa-envelope"></i> Admin E-posta</label>
+                <input type="email" id="admin-email" name="admin-email" required placeholder="admin@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-password"><i class="fas fa-lock"></i> Admin Şifre</label>
+                <input type="password" id="admin-password" name="admin-password" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn-login" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <i class="fas fa-shield-alt"></i> Admin Girişi Yap
+            </button>
+            
+            <div class="loading" id="admin-loading">
+                <i class="fas fa-spinner fa-spin"></i> Admin girişi yapılıyor...
+            </div>
+        </form>
+        
+        <div class="register-link">
+            Hesabınız yok mu? <a href="/register">Kayıt Ol</a>
+        </div>
+    </div>
+    
+    <script>
+        // Tab değiştirme
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.login-tab');
+            const userForm = document.getElementById('login-form');
+            const adminForm = document.getElementById('admin-login-form');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'user') {
+                tabs[0].classList.add('active');
+                userForm.classList.remove('hidden');
+                adminForm.classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                userForm.classList.add('hidden');
+                adminForm.classList.remove('hidden');
+            }
+            
+            // Hata mesajlarını temizle
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+        
+        // Kullanıcı giriş formu
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            const loadingDiv = document.getElementById('loading');
+            const submitBtn = this.querySelector('.btn-login');
+            
+            // Validasyon
+            if (!email || !password) {
+                errorDiv.textContent = 'Lütfen tüm alanları doldurun';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                errorDiv.textContent = 'Geçerli bir e-posta adresi giriniz';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            // Loading göster
+            loadingDiv.style.display = 'block';
+            submitBtn.disabled = true;
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    successDiv.textContent = 'Giriş başarılı! Yönlendiriliyorsunuz...';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    errorDiv.textContent = result.error || 'Giriş başarısız';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Admin giriş formu
+        document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            const loadingDiv = document.getElementById('admin-loading');
+            const submitBtn = this.querySelector('.btn-login');
+            
+            // Validasyon
+            if (!email || !password) {
+                errorDiv.textContent = 'Lütfen tüm alanları doldurun';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                errorDiv.textContent = 'Geçerli bir e-posta adresi giriniz';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            // Loading göster
+            loadingDiv.style.display = 'block';
+            submitBtn.disabled = true;
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Admin kontrolü yap
+                    const userResponse = await fetch('/api/auth/me');
+                    const userData = await userResponse.json();
+                    
+                    if (userData.success && userData.user && userData.user.is_admin) {
+                        successDiv.textContent = 'Admin girişi başarılı! Yönlendiriliyorsunuz...';
+                        successDiv.style.display = 'block';
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    } else {
+                        errorDiv.textContent = 'Bu hesap admin yetkisine sahip değil!';
+                        errorDiv.style.display = 'block';
+                    }
+                } else {
+                    errorDiv.textContent = result.error || 'Admin girişi başarısız';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
+

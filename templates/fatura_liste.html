@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satış Faturaları</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cari_hesap_liste.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/input-fix.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Üst Menü Çubuğu -->
+        {% include 'includes/header.html' %}
+
+        <!-- Ana İçerik Alanı -->
+        <main class="main-content">
+            <div class="cari-modul-header">
+                <h2 class="modul-title">Satış Faturaları</h2>
+                <button class="btn-yeni-cari" onclick="showAddFaturaDialog()">
+                    <i class="fas fa-plus"></i>
+                    Yeni Fatura Ekle
+                </button>
+            </div>
+
+            <!-- Arama Çubuğu -->
+            <div class="search-section" style="margin: 20px 0;">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="fatura-search" placeholder="Fatura no, cari hesap veya tarih ile ara..." class="search-input" onkeyup="filterFaturalar()">
+                </div>
+            </div>
+
+            <!-- Fatura Tablosu -->
+            <div class="cari-table-container">
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+                </div>
+                <div class="table-wrapper">
+                    <table class="cari-table" id="fatura-table">
+                        <thead>
+                            <tr>
+                                <th>Fatura No</th>
+                                <th>Tarih</th>
+                                <th>Cari Hesap</th>
+                                <th>Unvan</th>
+                                <th>Toplam (KDV Dahil)</th>
+                                <th>KDV</th>
+                                <th>Ödenecek Tutar</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fatura-tbody">
+                            <!-- Veriler JavaScript ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let faturalar = [];
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFaturalar();
+            checkAdminAndShowDeleteButtons();
+        });
+        
+        // Admin kontrolü ve silme butonlarını göster
+        async function checkAdminAndShowDeleteButtons() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const data = await response.json();
+                
+                if (data.success && data.user && data.user.is_admin) {
+                    // Admin ise tüm silme butonlarını göster
+                    document.querySelectorAll('[id^="delete-btn-"]').forEach(btn => {
+                        btn.style.display = 'inline-block';
+                    });
+                }
+            } catch (error) {
+                console.error('Admin kontrolü hatası:', error);
+            }
+        }
+
+        // Faturaları yükle
+        async function loadFaturalar() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/fatura');
+                const data = await response.json();
+                
+                if (data.success) {
+                    faturalar = data.faturalar || [];
+                    displayFaturalar(faturalar);
+                } else {
+                    NotificationSystem.error('Faturalar yüklenirken hata oluştu: ' + data.error, true);
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+                NotificationSystem.error('Faturalar yüklenirken hata oluştu', true);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Faturaları göster
+        function displayFaturalar(faturaList) {
+            const tbody = document.getElementById('fatura-tbody');
+            tbody.innerHTML = '';
+
+            if (faturaList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">Henüz fatura eklenmemiş</td></tr>';
+                return;
+            }
+
+            faturaList.forEach(fatura => {
+                const cariHesap = fatura.cariHesap || {};
+                const unvan = typeof cariHesap === 'string' ? '-' : (cariHesap.unvani || '-');
+                const kodu = typeof cariHesap === 'string' ? '-' : (cariHesap.kodu || '-');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fatura.faturaNo || '-'}</td>
+                    <td>${fatura.tarih || '-'}</td>
+                    <td>${kodu}</td>
+                    <td>${unvan}</td>
+                    <td>${formatCurrency(fatura.toplam || 0)}</td>
+                    <td>${formatCurrency(fatura.toplamKDV || 0)}</td>
+                    <td>${formatCurrency(fatura.toplam || 0)}</td>
+                    <td>
+                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; 
+                            background: ${fatura.durum === 'Kesildi' ? '#28a745' : '#ffc107'}; 
+                            color: ${fatura.durum === 'Kesildi' ? 'white' : 'black'};">
+                            ${fatura.durum || 'Açık'}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="viewFatura('${fatura.id}')" style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                            <i class="fas fa-eye"></i> Görüntüle
+                        </button>
+                        <button onclick="downloadPDF('${fatura.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button onclick="sendEmail('${fatura.id}')" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                            <i class="fas fa-envelope"></i> E-posta
+                        </button>
+                        <button id="delete-btn-${fatura.id}" onclick="deleteFatura('${fatura.id}')" style="background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; display: none;">
+                            <i class="fas fa-trash"></i> Sil
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Admin kontrolü yap ve silme butonlarını göster
+            checkAdminAndShowDeleteButtons();
+        }
+
+        // Filtreleme
+        function filterFaturalar() {
+            const searchTerm = document.getElementById('fatura-search').value.toLowerCase();
+            const filtered = faturalar.filter(f => {
+                const faturaNo = (f.faturaNo || '').toLowerCase();
+                const tarih = (f.tarih || '').toLowerCase();
+                const cariHesap = f.cariHesap || {};
+                const unvan = (typeof cariHesap === 'string' ? '-' : (cariHesap.unvani || '')).toLowerCase();
+                return faturaNo.includes(searchTerm) || tarih.includes(searchTerm) || unvan.includes(searchTerm);
+            });
+            displayFaturalar(filtered);
+        }
+
+        function showAddFaturaDialog() {
+            window.location.href = '/satis-faturalari/ekle';
+        }
+
+        function viewFatura(id) {
+            window.location.href = `/satis-faturalari/${id}`;
+        }
+
+        async function deleteFatura(id) {
+            // Admin kontrolü
+            try {
+                const userResponse = await fetch('/api/auth/me');
+                const userData = await userResponse.json();
+                
+                if (!userData.success || !userData.user || !userData.user.is_admin) {
+                    NotificationSystem.error('Bu işlem için admin yetkisi gereklidir!', true);
+                    return;
+                }
+            } catch (error) {
+                NotificationSystem.error('Yetki kontrolü yapılamadı!', true);
+                return;
+            }
+            
+            const fatura = faturalar.find(f => f.id === id);
+            if (!fatura) {
+                NotificationSystem.error('Fatura bulunamadı', true);
+                return;
+            }
+
+            const cariHesap = fatura.cariHesap || {};
+            const unvan = typeof cariHesap === 'string' ? '-' : (cariHesap.unvani || '-');
+            
+            const details = [
+                { label: 'Fatura No', value: fatura.faturaNo || '-' },
+                { label: 'Tarih', value: fatura.tarih || '-' },
+                { label: 'Cari Hesap', value: unvan },
+                { label: 'Toplam Tutar', value: formatCurrency(fatura.toplam || 0) }
+            ];
+
+            showDeleteModal(
+                'Faturayı Sil',
+                'Bu faturayı silmek istediğinize emin misiniz?',
+                details,
+                async (faturaId) => {
+                    try {
+                        const response = await fetch(`/api/fatura/${faturaId}`, {
+                            method: 'DELETE'
+                        });
+
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            NotificationSystem.success('Fatura başarıyla silindi!', false);
+                            loadFaturalar();
+                        } else {
+                            NotificationSystem.error('Hata: ' + data.error, true);
+                        }
+                    } catch (error) {
+                        console.error('Hata:', error);
+                        NotificationSystem.error('Fatura silinirken hata oluştu', true);
+                    }
+                },
+                id
+            );
+        }
+
+        // PDF indir
+        async function downloadPDF(faturaId) {
+            try {
+                const response = await fetch(`/api/fatura/${faturaId}/pdf`, {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const fatura = faturalar.find(f => f.id === faturaId);
+                    a.download = `Fatura_${fatura ? fatura.faturaNo : faturaId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    NotificationSystem.warning('PDF oluşturulurken hata oluştu. Masaüstü uygulamasını kullanabilirsiniz.', true);
+                }
+            } catch (error) {
+                console.error('PDF indirme hatası:', error);
+                NotificationSystem.error('PDF indirilirken hata oluştu', true);
+            }
+        }
+
+        // E-posta gönder
+        async function sendEmail(faturaId) {
+            if (!confirm('Bu faturayı e-posta ile göndermek istediğinize emin misiniz?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/fatura/${faturaId}/send-email`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    NotificationSystem.success('Fatura başarıyla e-posta ile gönderildi!', false);
+                } else {
+                    NotificationSystem.error('Hata: ' + data.error, true);
+                }
+            } catch (error) {
+                console.error('E-posta gönderme hatası:', error);
+                NotificationSystem.error('E-posta gönderilirken hata oluştu: ' + error.message, true);
+            }
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(num);
+        }
+    </script>
+    {% include 'includes/hesap_makinesi.html' %}
+    {% include 'includes/notification.html' %}
+    {% include 'includes/delete_modal.html' %}
+</body>
+</html>
+
